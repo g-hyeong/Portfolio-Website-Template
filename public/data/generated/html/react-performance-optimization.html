@@ -1,0 +1,59 @@
+<h1 class="text-2xl font-bold text-foreground mt-8 mb-4 first:mt-0">React 성능 최적화 기법</h1>
+<p class="text-foreground-secondary leading-relaxed mb-4">React 애플리케이션의 성능을 향상시키기 위한 다양한 최적화 기법들을 정리해보겠습니다.</p>
+<h2 class="text-xl font-bold text-foreground mt-6 mb-3">1. React.memo와 useMemo</h2>
+<p class="text-foreground-secondary leading-relaxed mb-4">불필요한 리렌더링을 방지하기 위해 React.memo와 useMemo를 활용할 수 있습니다.</p>
+<pre class="rounded-lg overflow-x-auto mb-4 bg-surface text-foreground p-4"><code class="hljs language-jsx text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border bg-surface p-4 rounded-lg overflow-x-auto"><span class="hljs-comment">// React.memo 사용</span>
+<span class="hljs-keyword">const</span> <span class="hljs-title class_">ExpensiveComponent</span> = <span class="hljs-title class_">React</span>.<span class="hljs-title function_">memo</span>(<span class="hljs-function">(<span class="hljs-params">{ data }</span>) =></span> {
+  <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&#x3C;<span class="hljs-name">div</span>></span>{data.map(item => <span class="hljs-tag">&#x3C;<span class="hljs-name">Item</span> <span class="hljs-attr">key</span>=<span class="hljs-string">{item.id}</span> <span class="hljs-attr">data</span>=<span class="hljs-string">{item}</span> /></span>)}<span class="hljs-tag">&#x3C;/<span class="hljs-name">div</span>></span></span>;
+});
+
+<span class="hljs-comment">// useMemo 사용</span>
+<span class="hljs-keyword">const</span> expensiveValue = <span class="hljs-title function_">useMemo</span>(<span class="hljs-function">() =></span> {
+  <span class="hljs-keyword">return</span> data.<span class="hljs-title function_">filter</span>(<span class="hljs-function"><span class="hljs-params">item</span> =></span> item.<span class="hljs-property">active</span>).<span class="hljs-title function_">map</span>(<span class="hljs-function"><span class="hljs-params">item</span> =></span> item.<span class="hljs-property">value</span>);
+}, [data]);
+</code></pre>
+<h2 class="text-xl font-bold text-foreground mt-6 mb-3">2. 가상화 (Virtualization)</h2>
+<p class="text-foreground-secondary leading-relaxed mb-4">대량의 데이터를 렌더링할 때는 가상화 기법을 사용하여 성능을 개선할 수 있습니다.</p>
+<pre class="rounded-lg overflow-x-auto mb-4 bg-surface text-foreground p-4"><code class="hljs language-jsx text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border bg-surface p-4 rounded-lg overflow-x-auto"><span class="hljs-keyword">import</span> { <span class="hljs-title class_">FixedSizeList</span> <span class="hljs-keyword">as</span> <span class="hljs-title class_">List</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-window'</span>;
+
+<span class="hljs-keyword">const</span> <span class="hljs-title function_">VirtualizedList</span> = (<span class="hljs-params">{ items }</span>) => (
+  <span class="xml"><span class="hljs-tag">&#x3C;<span class="hljs-name">List</span>
+    <span class="hljs-attr">height</span>=<span class="hljs-string">{600}</span>
+    <span class="hljs-attr">itemCount</span>=<span class="hljs-string">{items.length}</span>
+    <span class="hljs-attr">itemSize</span>=<span class="hljs-string">{35}</span>
+  ></span>
+    {({ index, style }) => (
+      <span class="hljs-tag">&#x3C;<span class="hljs-name">div</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{style}</span>></span>
+        {items[index].name}
+      <span class="hljs-tag">&#x3C;/<span class="hljs-name">div</span>></span>
+    )}
+  <span class="hljs-tag">&#x3C;/<span class="hljs-name">List</span>></span></span>
+);
+</code></pre>
+<h2 class="text-xl font-bold text-foreground mt-6 mb-3">3. 코드 분할 (Code Splitting)</h2>
+<p class="text-foreground-secondary leading-relaxed mb-4">동적 import를 사용하여 번들 크기를 줄이고 초기 로딩 시간을 개선할 수 있습니다.</p>
+<pre class="rounded-lg overflow-x-auto mb-4 bg-surface text-foreground p-4"><code class="hljs language-jsx text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border bg-surface p-4 rounded-lg overflow-x-auto"><span class="hljs-keyword">const</span> <span class="hljs-title class_">LazyComponent</span> = <span class="hljs-title class_">React</span>.<span class="hljs-title function_">lazy</span>(<span class="hljs-function">() =></span> <span class="hljs-keyword">import</span>(<span class="hljs-string">'./LazyComponent'</span>));
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">App</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&#x3C;<span class="hljs-name">Suspense</span> <span class="hljs-attr">fallback</span>=<span class="hljs-string">{</span>&#x3C;<span class="hljs-attr">div</span>></span>Loading...<span class="hljs-tag">&#x3C;/<span class="hljs-name">div</span>></span>}>
+      <span class="hljs-tag">&#x3C;<span class="hljs-name">LazyComponent</span> /></span>
+    <span class="hljs-tag">&#x3C;/<span class="hljs-name">Suspense</span>></span></span>
+  );
+}
+</code></pre>
+<h2 class="text-xl font-bold text-foreground mt-6 mb-3">4. 이미지 최적화</h2>
+<p class="text-foreground-secondary leading-relaxed mb-4">Next.js의 Image 컴포넌트를 사용하여 이미지를 최적화할 수 있습니다.</p>
+<pre class="rounded-lg overflow-x-auto mb-4 bg-surface text-foreground p-4"><code class="hljs language-jsx text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border bg-surface p-4 rounded-lg overflow-x-auto"><span class="hljs-keyword">import</span> <span class="hljs-title class_">Image</span> <span class="hljs-keyword">from</span> <span class="hljs-string">'next/image'</span>;
+
+<span class="xml"><span class="hljs-tag">&#x3C;<span class="hljs-name">Image</span>
+  <span class="hljs-attr">src</span>=<span class="hljs-string">"/path/to/image.jpg"</span>
+  <span class="hljs-attr">alt</span>=<span class="hljs-string">"Description"</span>
+  <span class="hljs-attr">width</span>=<span class="hljs-string">{500}</span>
+  <span class="hljs-attr">height</span>=<span class="hljs-string">{300}</span>
+  <span class="hljs-attr">priority</span>
+  <span class="hljs-attr">placeholder</span>=<span class="hljs-string">"blur"</span>
+/></span></span>
+</code></pre>
+<h2 class="text-xl font-bold text-foreground mt-6 mb-3">결론</h2>
+<p class="text-foreground-secondary leading-relaxed mb-4">React 성능 최적화는 단순히 하나의 기법만으로는 해결되지 않습니다. 애플리케이션의 특성에 맞는 적절한 최적화 기법들을 조합하여 사용하는 것이 중요합니다.</p>

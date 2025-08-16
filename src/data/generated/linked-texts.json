@@ -1,0 +1,430 @@
+{
+  "trie": {
+    "isEnd": false,
+    "matches": [],
+    "children": {
+      "성": {
+        "isEnd": false,
+        "matches": [],
+        "children": {
+          "능": {
+            "isEnd": false,
+            "matches": [],
+            "children": {
+              " ": {
+                "isEnd": false,
+                "matches": [],
+                "children": {
+                  "최": {
+                    "isEnd": false,
+                    "matches": [],
+                    "children": {
+                      "적": {
+                        "isEnd": false,
+                        "matches": [],
+                        "children": {
+                          "화": {
+                            "isEnd": true,
+                            "matches": [
+                              {
+                                "noteId": "react-performance-optimization",
+                                "priority": 90,
+                                "strength": 85,
+                                "originalText": "성능 최적화"
+                              }
+                            ],
+                            "children": {}
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "웹": {
+        "isEnd": false,
+        "matches": [],
+        "children": {
+          " ": {
+            "isEnd": false,
+            "matches": [],
+            "children": {
+              "애": {
+                "isEnd": false,
+                "matches": [],
+                "children": {
+                  "플": {
+                    "isEnd": false,
+                    "matches": [],
+                    "children": {
+                      "리": {
+                        "isEnd": false,
+                        "matches": [],
+                        "children": {
+                          "케": {
+                            "isEnd": false,
+                            "matches": [],
+                            "children": {
+                              "이": {
+                                "isEnd": false,
+                                "matches": [],
+                                "children": {
+                                  "션": {
+                                    "isEnd": false,
+                                    "matches": [],
+                                    "children": {
+                                      " ": {
+                                        "isEnd": false,
+                                        "matches": [],
+                                        "children": {
+                                          "개": {
+                                            "isEnd": false,
+                                            "matches": [],
+                                            "children": {
+                                              "발": {
+                                                "isEnd": true,
+                                                "matches": [
+                                                  {
+                                                    "noteId": "next-js-ssr-guide",
+                                                    "priority": 85,
+                                                    "strength": 95,
+                                                    "originalText": "웹 애플리케이션 개발"
+                                                  }
+                                                ],
+                                                "children": {}
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "데": {
+        "isEnd": false,
+        "matches": [],
+        "children": {
+          "이": {
+            "isEnd": false,
+            "matches": [],
+            "children": {
+              "터": {
+                "isEnd": false,
+                "matches": [],
+                "children": {
+                  "베": {
+                    "isEnd": false,
+                    "matches": [],
+                    "children": {
+                      "이": {
+                        "isEnd": false,
+                        "matches": [],
+                        "children": {
+                          "스": {
+                            "isEnd": false,
+                            "matches": [],
+                            "children": {
+                              " ": {
+                                "isEnd": false,
+                                "matches": [],
+                                "children": {
+                                  "설": {
+                                    "isEnd": false,
+                                    "matches": [],
+                                    "children": {
+                                      "계": {
+                                        "isEnd": true,
+                                        "matches": [
+                                          {
+                                            "noteId": "database-design-patterns",
+                                            "priority": 80,
+                                            "strength": 85,
+                                            "originalText": "데이터베이스 설계"
+                                          }
+                                        ],
+                                        "children": {}
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "d": {
+        "isEnd": false,
+        "matches": [],
+        "children": {
+          "e": {
+            "isEnd": false,
+            "matches": [],
+            "children": {
+              "v": {
+                "isEnd": false,
+                "matches": [],
+                "children": {
+                  "o": {
+                    "isEnd": false,
+                    "matches": [],
+                    "children": {
+                      "p": {
+                        "isEnd": false,
+                        "matches": [],
+                        "children": {
+                          "s": {
+                            "isEnd": false,
+                            "matches": [],
+                            "children": {
+                              " ": {
+                                "isEnd": false,
+                                "matches": [],
+                                "children": {
+                                  "및": {
+                                    "isEnd": false,
+                                    "matches": [],
+                                    "children": {
+                                      " ": {
+                                        "isEnd": false,
+                                        "matches": [],
+                                        "children": {
+                                          "배": {
+                                            "isEnd": false,
+                                            "matches": [],
+                                            "children": {
+                                              "포": {
+                                                "isEnd": true,
+                                                "matches": [
+                                                  {
+                                                    "noteId": "docker-deployment-guide",
+                                                    "priority": 75,
+                                                    "strength": 80,
+                                                    "originalText": "DevOps 및 배포"
+                                                  }
+                                                ],
+                                                "children": {}
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "p": {
+        "isEnd": false,
+        "matches": [],
+        "children": {
+          "e": {
+            "isEnd": false,
+            "matches": [],
+            "children": {
+              "r": {
+                "isEnd": false,
+                "matches": [],
+                "children": {
+                  "s": {
+                    "isEnd": false,
+                    "matches": [],
+                    "children": {
+                      "o": {
+                        "isEnd": false,
+                        "matches": [],
+                        "children": {
+                          "n": {
+                            "isEnd": false,
+                            "matches": [],
+                            "children": {
+                              "a": {
+                                "isEnd": false,
+                                "matches": [],
+                                "children": {
+                                  "l": {
+                                    "isEnd": false,
+                                    "matches": [],
+                                    "children": {
+                                      " ": {
+                                        "isEnd": false,
+                                        "matches": [],
+                                        "children": {
+                                          "b": {
+                                            "isEnd": false,
+                                            "matches": [],
+                                            "children": {
+                                              "l": {
+                                                "isEnd": false,
+                                                "matches": [],
+                                                "children": {
+                                                  "o": {
+                                                    "isEnd": false,
+                                                    "matches": [],
+                                                    "children": {
+                                                      "g": {
+                                                        "isEnd": false,
+                                                        "matches": [],
+                                                        "children": {
+                                                          " ": {
+                                                            "isEnd": false,
+                                                            "matches": [],
+                                                            "children": {
+                                                              "p": {
+                                                                "isEnd": false,
+                                                                "matches": [],
+                                                                "children": {
+                                                                  "l": {
+                                                                    "isEnd": false,
+                                                                    "matches": [],
+                                                                    "children": {
+                                                                      "a": {
+                                                                        "isEnd": false,
+                                                                        "matches": [],
+                                                                        "children": {
+                                                                          "t": {
+                                                                            "isEnd": false,
+                                                                            "matches": [],
+                                                                            "children": {
+                                                                              "f": {
+                                                                                "isEnd": false,
+                                                                                "matches": [],
+                                                                                "children": {
+                                                                                  "o": {
+                                                                                    "isEnd": false,
+                                                                                    "matches": [],
+                                                                                    "children": {
+                                                                                      "r": {
+                                                                                        "isEnd": false,
+                                                                                        "matches": [],
+                                                                                        "children": {
+                                                                                          "m": {
+                                                                                            "isEnd": true,
+                                                                                            "matches": [
+                                                                                              {
+                                                                                                "noteId": "aws-architecture-decisions",
+                                                                                                "priority": 70,
+                                                                                                "strength": 80,
+                                                                                                "originalText": "Personal Blog Platform"
+                                                                                              }
+                                                                                            ],
+                                                                                            "children": {}
+                                                                                          }
+                                                                                        }
+                                                                                      }
+                                                                                    }
+                                                                                  }
+                                                                                }
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "simpleMap": {
+    "성능 최적화": [
+      {
+        "noteId": "react-performance-optimization",
+        "priority": 90,
+        "strength": 85
+      }
+    ],
+    "웹 애플리케이션 개발": [
+      {
+        "noteId": "next-js-ssr-guide",
+        "priority": 85,
+        "strength": 95
+      }
+    ],
+    "데이터베이스 설계": [
+      {
+        "noteId": "database-design-patterns",
+        "priority": 80,
+        "strength": 85
+      }
+    ],
+    "devops 및 배포": [
+      {
+        "noteId": "docker-deployment-guide",
+        "priority": 75,
+        "strength": 80
+      }
+    ],
+    "personal blog platform": [
+      {
+        "noteId": "aws-architecture-decisions",
+        "priority": 70,
+        "strength": 80
+      }
+    ]
+  },
+  "regexPatterns": []
+}

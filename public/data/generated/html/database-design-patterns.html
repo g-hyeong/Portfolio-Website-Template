@@ -1,0 +1,140 @@
+<h1 class="text-2xl font-bold text-foreground mt-8 mb-4 first:mt-0">데이터베이스 설계 패턴</h1>
+<p class="text-foreground-secondary leading-relaxed mb-4">효율적인 데이터베이스 설계를 위한 다양한 패턴과 모범 사례들을 정리했습니다.</p>
+<h2 class="text-xl font-bold text-foreground mt-6 mb-3">1. 정규화와 비정규화</h2>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">정규화 (Normalization)</h3>
+<p class="text-foreground-secondary leading-relaxed mb-4">데이터 중복을 최소화하고 데이터 무결성을 보장하는 과정입니다.</p>
+<pre class="rounded-lg overflow-x-auto mb-4 bg-surface text-foreground p-4"><code class="hljs language-sql text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border bg-surface p-4 rounded-lg overflow-x-auto"><span class="hljs-comment">-- 정규화된 테이블 구조</span>
+<span class="hljs-keyword">CREATE TABLE</span> users (
+    id SERIAL <span class="hljs-keyword">PRIMARY KEY</span>,
+    name <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">100</span>) <span class="hljs-keyword">NOT NULL</span>,
+    email <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">255</span>) <span class="hljs-keyword">UNIQUE</span> <span class="hljs-keyword">NOT NULL</span>
+);
+
+<span class="hljs-keyword">CREATE TABLE</span> orders (
+    id SERIAL <span class="hljs-keyword">PRIMARY KEY</span>,
+    user_id <span class="hljs-type">INTEGER</span> <span class="hljs-keyword">REFERENCES</span> users(id),
+    created_at <span class="hljs-type">TIMESTAMP</span> <span class="hljs-keyword">DEFAULT</span> NOW()
+);
+
+<span class="hljs-keyword">CREATE TABLE</span> order_items (
+    id SERIAL <span class="hljs-keyword">PRIMARY KEY</span>,
+    order_id <span class="hljs-type">INTEGER</span> <span class="hljs-keyword">REFERENCES</span> orders(id),
+    product_id <span class="hljs-type">INTEGER</span> <span class="hljs-keyword">REFERENCES</span> products(id),
+    quantity <span class="hljs-type">INTEGER</span> <span class="hljs-keyword">NOT NULL</span>,
+    price <span class="hljs-type">DECIMAL</span>(<span class="hljs-number">10</span>,<span class="hljs-number">2</span>) <span class="hljs-keyword">NOT NULL</span>
+);
+</code></pre>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">비정규화 (Denormalization)</h3>
+<p class="text-foreground-secondary leading-relaxed mb-4">성능 향상을 위해 의도적으로 중복을 허용하는 기법입니다.</p>
+<pre class="rounded-lg overflow-x-auto mb-4 bg-surface text-foreground p-4"><code class="hljs language-sql text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border bg-surface p-4 rounded-lg overflow-x-auto"><span class="hljs-comment">-- 비정규화된 테이블 (리포팅용)</span>
+<span class="hljs-keyword">CREATE TABLE</span> user_order_summary (
+    user_id <span class="hljs-type">INTEGER</span>,
+    user_name <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">100</span>),
+    total_orders <span class="hljs-type">INTEGER</span>,
+    total_amount <span class="hljs-type">DECIMAL</span>(<span class="hljs-number">12</span>,<span class="hljs-number">2</span>),
+    last_order_date <span class="hljs-type">TIMESTAMP</span>
+);
+</code></pre>
+<h2 class="text-xl font-bold text-foreground mt-6 mb-3">2. 인덱싱 전략</h2>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">기본 인덱스</h3>
+<pre class="rounded-lg overflow-x-auto mb-4 bg-surface text-foreground p-4"><code class="hljs language-sql text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border bg-surface p-4 rounded-lg overflow-x-auto"><span class="hljs-comment">-- 기본 키는 자동으로 인덱스 생성</span>
+<span class="hljs-keyword">CREATE TABLE</span> products (
+    id SERIAL <span class="hljs-keyword">PRIMARY KEY</span>,
+    name <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">255</span>) <span class="hljs-keyword">NOT NULL</span>,
+    price <span class="hljs-type">DECIMAL</span>(<span class="hljs-number">10</span>,<span class="hljs-number">2</span>),
+    category_id <span class="hljs-type">INTEGER</span>
+);
+
+<span class="hljs-comment">-- 외래 키에 인덱스 추가</span>
+<span class="hljs-keyword">CREATE</span> INDEX idx_products_category <span class="hljs-keyword">ON</span> products(category_id);
+
+<span class="hljs-comment">-- 복합 인덱스</span>
+<span class="hljs-keyword">CREATE</span> INDEX idx_products_category_price <span class="hljs-keyword">ON</span> products(category_id, price);
+</code></pre>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">부분 인덱스</h3>
+<pre class="rounded-lg overflow-x-auto mb-4 bg-surface text-foreground p-4"><code class="hljs language-sql text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border bg-surface p-4 rounded-lg overflow-x-auto"><span class="hljs-comment">-- 조건부 인덱스</span>
+<span class="hljs-keyword">CREATE</span> INDEX idx_active_users <span class="hljs-keyword">ON</span> users(email) <span class="hljs-keyword">WHERE</span> status <span class="hljs-operator">=</span> <span class="hljs-string">'active'</span>;
+</code></pre>
+<h2 class="text-xl font-bold text-foreground mt-6 mb-3">3. 관계 설계 패턴</h2>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">One-to-Many</h3>
+<pre class="rounded-lg overflow-x-auto mb-4 bg-surface text-foreground p-4"><code class="hljs language-sql text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border bg-surface p-4 rounded-lg overflow-x-auto"><span class="hljs-keyword">CREATE TABLE</span> categories (
+    id SERIAL <span class="hljs-keyword">PRIMARY KEY</span>,
+    name <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">100</span>) <span class="hljs-keyword">NOT NULL</span>
+);
+
+<span class="hljs-keyword">CREATE TABLE</span> products (
+    id SERIAL <span class="hljs-keyword">PRIMARY KEY</span>,
+    name <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">255</span>) <span class="hljs-keyword">NOT NULL</span>,
+    category_id <span class="hljs-type">INTEGER</span> <span class="hljs-keyword">REFERENCES</span> categories(id)
+);
+</code></pre>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">Many-to-Many</h3>
+<pre class="rounded-lg overflow-x-auto mb-4 bg-surface text-foreground p-4"><code class="hljs language-sql text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border bg-surface p-4 rounded-lg overflow-x-auto"><span class="hljs-keyword">CREATE TABLE</span> users (
+    id SERIAL <span class="hljs-keyword">PRIMARY KEY</span>,
+    name <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">100</span>) <span class="hljs-keyword">NOT NULL</span>
+);
+
+<span class="hljs-keyword">CREATE TABLE</span> roles (
+    id SERIAL <span class="hljs-keyword">PRIMARY KEY</span>,
+    name <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">50</span>) <span class="hljs-keyword">NOT NULL</span>
+);
+
+<span class="hljs-keyword">CREATE TABLE</span> user_roles (
+    user_id <span class="hljs-type">INTEGER</span> <span class="hljs-keyword">REFERENCES</span> users(id),
+    role_id <span class="hljs-type">INTEGER</span> <span class="hljs-keyword">REFERENCES</span> roles(id),
+    <span class="hljs-keyword">PRIMARY KEY</span> (user_id, role_id)
+);
+</code></pre>
+<h2 class="text-xl font-bold text-foreground mt-6 mb-3">4. 성능 최적화 패턴</h2>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">파티셔닝</h3>
+<pre class="rounded-lg overflow-x-auto mb-4 bg-surface text-foreground p-4"><code class="hljs language-sql text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border bg-surface p-4 rounded-lg overflow-x-auto"><span class="hljs-comment">-- 날짜 기반 파티셔닝</span>
+<span class="hljs-keyword">CREATE TABLE</span> orders (
+    id SERIAL,
+    user_id <span class="hljs-type">INTEGER</span>,
+    created_at <span class="hljs-type">DATE</span>,
+    amount <span class="hljs-type">DECIMAL</span>(<span class="hljs-number">10</span>,<span class="hljs-number">2</span>)
+) <span class="hljs-keyword">PARTITION</span> <span class="hljs-keyword">BY</span> <span class="hljs-keyword">RANGE</span> (created_at);
+
+<span class="hljs-keyword">CREATE TABLE</span> orders_2023 <span class="hljs-keyword">PARTITION</span> <span class="hljs-keyword">OF</span> orders
+    <span class="hljs-keyword">FOR</span> <span class="hljs-keyword">VALUES</span> <span class="hljs-keyword">FROM</span> (<span class="hljs-string">'2023-01-01'</span>) <span class="hljs-keyword">TO</span> (<span class="hljs-string">'2024-01-01'</span>);
+</code></pre>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">캐싱 전략</h3>
+<pre class="rounded-lg overflow-x-auto mb-4 bg-surface text-foreground p-4"><code class="hljs language-sql text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border bg-surface p-4 rounded-lg overflow-x-auto"><span class="hljs-comment">-- 머터리얼라이즈드 뷰</span>
+<span class="hljs-keyword">CREATE</span> MATERIALIZED <span class="hljs-keyword">VIEW</span> monthly_sales <span class="hljs-keyword">AS</span>
+<span class="hljs-keyword">SELECT</span> 
+    DATE_TRUNC(<span class="hljs-string">'month'</span>, created_at) <span class="hljs-keyword">as</span> <span class="hljs-keyword">month</span>,
+    <span class="hljs-built_in">SUM</span>(amount) <span class="hljs-keyword">as</span> total_sales,
+    <span class="hljs-built_in">COUNT</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">as</span> order_count
+<span class="hljs-keyword">FROM</span> orders
+<span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> DATE_TRUNC(<span class="hljs-string">'month'</span>, created_at);
+
+<span class="hljs-comment">-- 주기적 갱신</span>
+REFRESH MATERIALIZED <span class="hljs-keyword">VIEW</span> monthly_sales;
+</code></pre>
+<h2 class="text-xl font-bold text-foreground mt-6 mb-3">5. 데이터 타입 선택</h2>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">적절한 데이터 타입 사용</h3>
+<pre class="rounded-lg overflow-x-auto mb-4 bg-surface text-foreground p-4"><code class="hljs language-sql text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border bg-surface p-4 rounded-lg overflow-x-auto"><span class="hljs-comment">-- 잘못된 예</span>
+<span class="hljs-keyword">CREATE TABLE</span> bad_example (
+    id <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">50</span>),          <span class="hljs-comment">-- 숫자인데 VARCHAR 사용</span>
+    price <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">20</span>),       <span class="hljs-comment">-- 금액인데 VARCHAR 사용</span>
+    created_at <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">50</span>)   <span class="hljs-comment">-- 날짜인데 VARCHAR 사용</span>
+);
+
+<span class="hljs-comment">-- 올바른 예</span>
+<span class="hljs-keyword">CREATE TABLE</span> good_example (
+    id SERIAL <span class="hljs-keyword">PRIMARY KEY</span>,
+    price <span class="hljs-type">DECIMAL</span>(<span class="hljs-number">10</span>,<span class="hljs-number">2</span>),
+    created_at <span class="hljs-type">TIMESTAMP</span> <span class="hljs-keyword">DEFAULT</span> NOW()
+);
+</code></pre>
+<h2 class="text-xl font-bold text-foreground mt-6 mb-3">6. 트랜잭션 설계</h2>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">ACID 속성 보장</h3>
+<pre class="rounded-lg overflow-x-auto mb-4 bg-surface text-foreground p-4"><code class="hljs language-sql text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border bg-surface p-4 rounded-lg overflow-x-auto"><span class="hljs-keyword">BEGIN</span>;
+    <span class="hljs-keyword">UPDATE</span> accounts <span class="hljs-keyword">SET</span> balance <span class="hljs-operator">=</span> balance <span class="hljs-operator">-</span> <span class="hljs-number">100</span> <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">UPDATE</span> accounts <span class="hljs-keyword">SET</span> balance <span class="hljs-operator">=</span> balance <span class="hljs-operator">+</span> <span class="hljs-number">100</span> <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">=</span> <span class="hljs-number">2</span>;
+    <span class="hljs-keyword">INSERT INTO</span> transactions (from_account, to_account, amount) 
+    <span class="hljs-keyword">VALUES</span> (<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">100</span>);
+<span class="hljs-keyword">COMMIT</span>;
+</code></pre>
+<h2 class="text-xl font-bold text-foreground mt-6 mb-3">결론</h2>
+<p class="text-foreground-secondary leading-relaxed mb-4">데이터베이스 설계는 애플리케이션의 성능과 확장성에 직접적인 영향을 미칩니다. 초기 설계 단계에서 충분한 고려와 계획이 필요하며, 지속적인 모니터링과 최적화가 중요합니다.</p>

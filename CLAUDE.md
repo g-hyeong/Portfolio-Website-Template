@@ -1,0 +1,321 @@
+# Portfolio Template - Development Guide
+
+## Project Overview
+This is a modern portfolio website template built with Next.js and TypeScript. It's designed for static deployment and features a clean, professional design with smooth animations and easy customization.
+
+## Technology Stack
+- **Framework**: Next.js 15 with App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS 4
+- **Animations**: Framer Motion
+- **Icons**: React Icons
+- **Deployment**: Static Export (GitHub Pages ready)
+
+## Project Architecture
+
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── layout.tsx         # Root layout with metadata
+│   ├── page.tsx           # Main page composition
+│   └── globals.css        # Global styles and CSS variables
+├── components/            # Reusable React components
+│   ├── layout/           # Layout components
+│   │   ├── Header.tsx    # Navigation header
+│   │   └── Footer.tsx    # Footer with credits
+│   ├── sections/         # Page section components
+│   │   ├── HeroSection.tsx           # Hero/intro section
+│   │   ├── CareerSection.tsx         # Career timeline
+│   │   ├── ProjectsSection.tsx       # Project showcase
+│   │   ├── SkillsSection.tsx         # Technical skills
+│   │   └── AchievementsSection.tsx   # Awards & certifications
+│   ├── modals/           # Modal components
+│   ├── shared/           # Shared utility components
+│   └── ui/               # UI components (buttons, etc.)
+├── data/                 # Static data management
+│   ├── index.ts          # Central data exports
+│   ├── careers.ts        # Career/work experience data
+│   ├── projects.ts       # Project portfolio data
+│   ├── activities.ts     # Activities and involvement
+│   ├── achievements.ts   # Awards and certifications
+│   ├── skills.ts         # Technical skills and proficiency
+│   └── notes.ts          # Blog posts and articles
+├── types/                # TypeScript type definitions
+│   └── portfolio.ts      # Main portfolio data types
+├── hooks/                # Custom React hooks
+├── utils/                # Utility functions
+└── contexts/             # React contexts
+```
+
+## Data Management Philosophy
+
+### 1. Static-First Approach
+- All content managed through TypeScript files
+- Data processed at build time for optimal performance
+- No runtime API calls required
+- Easy version control and collaboration
+
+### 2. Type Safety
+- Comprehensive TypeScript definitions for all data structures
+- Compile-time validation of data integrity
+- Enhanced IDE support with autocomplete and error detection
+- Prevents runtime errors from malformed data
+
+### 3. Modular Data Structure
+- Data organized by type and responsibility
+- Independent files for each section
+- Central coordination through `src/data/index.ts`
+- Easy to maintain and scale
+
+## Development Guidelines
+
+### Adding/Modifying Data
+
+1. **Update Data Files**: Edit relevant files in `src/data/`
+   ```typescript
+   // Example: Adding a new project
+   export const projects: Project[] = [
+     {
+       projectId: 'unique-id',
+       title: 'Project Name',
+       // ... other properties
+     }
+   ];
+   ```
+
+2. **Type Definitions**: Update types in `src/types/portfolio.ts` if needed
+   ```typescript
+   export interface Project {
+     projectId: string;
+     title: string;
+     // ... define all required properties
+   }
+   ```
+
+3. **Validation**: Run build to check for type errors
+   ```bash
+   npm run build
+   ```
+
+### Creating New Sections
+
+1. **Define Types**: Add interface to `src/types/portfolio.ts`
+2. **Create Data**: Add data file in `src/data/`
+3. **Build Component**: Create section component in `src/components/sections/`
+4. **Integrate**: Add to main page in `src/app/page.tsx`
+
+### Styling Best Practices
+
+- Use Tailwind CSS utility classes for consistency
+- Follow mobile-first responsive design principles
+- Maintain consistent spacing using Tailwind's spacing scale
+- Use CSS custom properties for theme colors
+
+## Build and Deployment
+
+### Development Workflow
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Type checking
+npm run type-check
+
+# Linting
+npm run lint
+
+# Build for production
+npm run build
+```
+
+### Build-time Preprocessing
+This project includes sophisticated preprocessing that runs automatically before development and production builds:
+
+#### 1. Linked Text Processing (`predev`, `prebuild`)
+- **When**: Automatically runs before `npm run dev` and `npm run build`
+- **Script**: `scripts/preprocess-linked-texts.ts`
+- **Purpose**: Optimizes note linking performance
+- **Process**:
+  - Analyzes all `linkedTexts` in note data
+  - Creates optimized Trie data structure for fast text matching
+  - Generates priority-sorted lookup maps
+  - Separates regex patterns for complex matching
+  - Outputs: `src/data/generated/linked-texts.json`
+
+#### 2. Advanced Markdown Processing
+- **When**: Runs during preprocessing phase
+- **Script**: `scripts/advanced-markdown-processor.ts`
+- **Purpose**: Pre-converts markdown files to HTML with full styling
+- **Process**:
+  - Reads markdown files from `public/data/notePosts/`
+  - Applies unified/remark/rehype pipeline:
+    - GitHub Flavored Markdown (tables, task lists, etc.)
+    - Syntax highlighting with highlight.js
+    - Custom CSS class injection for consistent styling
+    - URL safety validation and image path optimization
+  - Generates styled HTML files in `public/data/generated/html/`
+  - Error handling with fallback HTML for missing files
+
+#### 3. Performance Benefits
+- **Build-time optimization**: Heavy processing moved from runtime to build time
+- **Reduced bundle size**: Pre-processed data reduces client-side computation
+- **Faster page loads**: HTML ready for direct rendering
+- **Consistent styling**: All markdown consistently styled with project theme
+
+#### 4. Generated Files (Auto-created)
+```
+src/data/generated/
+└── linked-texts.json       # Optimized text linking data
+
+public/data/generated/html/
+├── note1.html              # Pre-rendered HTML files
+├── note2.html
+└── ...
+```
+
+These files are automatically generated and should not be manually edited.
+
+### GitHub Pages Deployment
+- Automatic deployment via GitHub Actions
+- Configured in `.github/workflows/deploy.yml`
+- Supports custom domains through repository variables
+- No additional setup required after initial configuration
+
+## Key Features Explained
+
+### 1. Project Classification
+- Supports both team and personal projects
+- `projectType` field for easy filtering
+- Rich project details with images, architecture diagrams, and demos
+
+### 2. Multi-Level Skills Display
+- `familiar` vs `experienced` skill levels
+- Category-based organization (Frontend, Backend, DevOps, etc.)
+- Visual representation with interactive elements
+
+### 3. Achievement Tracking
+- Separate section for awards and certifications
+- Linked to related projects where applicable
+- Timeline-based display
+
+### 4. Interactive Notes System
+- Blog-style posts with categories and tags
+- Linked text system for cross-references
+- Markdown support for rich content
+
+## Customization Guide
+
+### Theme and Colors
+```css
+/* src/app/globals.css */
+:root {
+  --primary: #3b82f6;
+  --secondary: #8b5cf6;
+  --accent: #06b6d4;
+}
+```
+
+### Animation Configuration
+```typescript
+// Framer Motion variants
+const fadeInUp = {
+  initial: { opacity: 0, y: 60 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.6, ease: "easeOut" }
+};
+```
+
+### Layout Modifications
+- Sections are modular and can be reordered in `src/app/page.tsx`
+- Each section component is self-contained
+- Easy to add, remove, or modify sections
+
+## Performance Optimization
+
+### Built-in Optimizations
+- Next.js automatic code splitting
+- Image optimization with Next.js Image component
+- Static generation for fast loading
+- Font optimization with Google Fonts
+
+### Best Practices
+- Use appropriate image formats and sizes
+- Minimize bundle size through tree shaking
+- Implement proper lazy loading for images
+- Monitor Core Web Vitals
+
+## SEO and Accessibility
+
+### SEO Features
+- Semantic HTML structure
+- Proper meta tags and Open Graph data
+- Structured data markup
+- Automatic sitemap generation
+
+### Accessibility
+- ARIA labels and landmarks
+- Keyboard navigation support
+- Color contrast compliance
+- Screen reader optimization
+
+## Testing and Quality Assurance
+
+### Recommended Testing
+```bash
+# Type checking
+npm run type-check
+
+# Linting
+npm run lint
+
+# Build verification
+npm run build
+
+# Lighthouse CI for performance
+npx lighthouse-ci autorun
+```
+
+### Code Quality
+- TypeScript strict mode enabled
+- ESLint with Next.js recommended rules
+- Prettier for consistent formatting
+- Husky for pre-commit hooks
+
+## Maintenance Guidelines
+
+### Regular Updates
+1. Keep dependencies updated monthly
+2. Monitor performance metrics
+3. Update content data as needed
+4. Review and optimize images periodically
+
+### Troubleshooting
+- Check console for TypeScript errors
+- Verify image paths and assets
+- Test responsive design on various devices
+- Validate deployment configuration
+
+## Deployment Options
+
+### GitHub Pages (Recommended)
+- Automatic deployment via GitHub Actions
+- Custom domain support
+- SSL certificates included
+- CDN for global performance
+
+### Alternative Platforms
+- **Vercel**: Zero-config deployment
+- **Netlify**: Form handling and edge functions
+- **AWS S3**: Custom AWS integration
+- **Firebase Hosting**: Google Cloud integration
+
+---
+
+## Credits and Attribution
+
+**Template created by**: [g-hyeong](https://github.com/g-hyeong)  
+**Repository**: [Portfolio-Website-Template](https://github.com/g-hyeong/Portfolio-Website-Template)  
+**License**: MIT

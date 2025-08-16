@@ -1,0 +1,271 @@
+<h1 class="text-2xl font-bold text-foreground mt-8 mb-4 first:mt-0">AWS 아키텍처 설계 회고</h1>
+<p class="text-foreground-secondary leading-relaxed mb-4">대규모 웹 애플리케이션을 위한 AWS 클라우드 아키텍처 설계 과정과 배운 점들을 정리했습니다.</p>
+<h2 class="text-xl font-bold text-foreground mt-6 mb-3">프로젝트 개요</h2>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">요구사항</h3>
+<ul class="list-disc list-inside text-foreground-secondary mb-4 space-y-1">
+<li class="text-foreground-secondary">월 1000만 PV 처리 가능한 웹 애플리케이션</li>
+<li class="text-foreground-secondary">99.9% 가용성 보장</li>
+<li class="text-foreground-secondary">글로벌 사용자 대응</li>
+<li class="text-foreground-secondary">비용 효율적인 운영</li>
+</ul>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">초기 아키텍처 설계</h3>
+<pre class="rounded-lg overflow-x-auto mb-4 bg-surface text-foreground p-4"><code class="hljs language-markdown text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border bg-surface p-4 rounded-lg overflow-x-auto">Internet Gateway
+<span class="hljs-code">       ↓
+Application Load Balancer
+       ↓
+Auto Scaling Group (EC2)
+       ↓
+RDS (Multi-AZ)
+</span></code></pre>
+<h2 class="text-xl font-bold text-foreground mt-6 mb-3">아키텍처 진화 과정</h2>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">1단계: 기본 3-Tier 아키텍처</h3>
+<pre class="rounded-lg overflow-x-auto mb-4 bg-surface text-foreground p-4"><code class="hljs language-yaml text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border bg-surface p-4 rounded-lg overflow-x-auto"><span class="hljs-comment"># 초기 설정</span>
+<span class="hljs-attr">VPC:</span> <span class="hljs-number">10.0</span><span class="hljs-number">.0</span><span class="hljs-number">.0</span><span class="hljs-string">/16</span>
+<span class="hljs-attr">Public Subnets:</span> <span class="hljs-number">10.0</span><span class="hljs-number">.1</span><span class="hljs-number">.0</span><span class="hljs-string">/24,</span> <span class="hljs-number">10.0</span><span class="hljs-number">.2</span><span class="hljs-number">.0</span><span class="hljs-string">/24</span>
+<span class="hljs-attr">Private Subnets:</span> <span class="hljs-number">10.0</span><span class="hljs-number">.10</span><span class="hljs-number">.0</span><span class="hljs-string">/24,</span> <span class="hljs-number">10.0</span><span class="hljs-number">.20</span><span class="hljs-number">.0</span><span class="hljs-string">/24</span>
+<span class="hljs-attr">Database Subnets:</span> <span class="hljs-number">10.0</span><span class="hljs-number">.100</span><span class="hljs-number">.0</span><span class="hljs-string">/24,</span> <span class="hljs-number">10.0</span><span class="hljs-number">.200</span><span class="hljs-number">.0</span><span class="hljs-string">/24</span>
+</code></pre>
+<p class="text-foreground-secondary leading-relaxed mb-4"><strong class="font-bold text-foreground">문제점:</strong></p>
+<ul class="list-disc list-inside text-foreground-secondary mb-4 space-y-1">
+<li class="text-foreground-secondary">단일 리전으로 인한 가용성 위험</li>
+<li class="text-foreground-secondary">정적 자산 로딩 속도 이슈</li>
+<li class="text-foreground-secondary">데이터베이스 성능 병목</li>
+</ul>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">2단계: CDN 및 캐싱 도입</h3>
+<pre class="rounded-lg overflow-x-auto mb-4 bg-surface text-foreground p-4"><code class="hljs language-sql text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border bg-surface p-4 rounded-lg overflow-x-auto">CloudFront (CDN)
+       ↓
+S3 (<span class="hljs-keyword">Static</span> Assets)
+       ↓
+Application Load Balancer
+       ↓
+Auto Scaling <span class="hljs-keyword">Group</span>
+       ↓
+ElastiCache (Redis)
+       ↓
+RDS (Read Replica 추가)
+</code></pre>
+<p class="text-foreground-secondary leading-relaxed mb-4"><strong class="font-bold text-foreground">개선점:</strong></p>
+<ul class="list-disc list-inside text-foreground-secondary mb-4 space-y-1">
+<li class="text-foreground-secondary">CloudFront로 글로벌 캐싱</li>
+<li class="text-foreground-secondary">Redis로 세션 및 데이터 캐싱</li>
+<li class="text-foreground-secondary">RDS Read Replica로 읽기 성능 향상</li>
+</ul>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">3단계: 마이크로서비스 아키텍처</h3>
+<pre class="rounded-lg overflow-x-auto mb-4 bg-surface text-foreground p-4"><code class="hljs language-markdown text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border bg-surface p-4 rounded-lg overflow-x-auto">API Gateway
+<span class="hljs-code">       ↓
+Lambda Functions (Serverless)
+       ↓
+SQS/SNS (Message Queue)
+       ↓
+DynamoDB (NoSQL)
+       ↓
+RDS (Core Data)
+</span></code></pre>
+<h2 class="text-xl font-bold text-foreground mt-6 mb-3">주요 의사결정과 근거</h2>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">1. EC2 vs Lambda</h3>
+<pre class="rounded-lg overflow-x-auto mb-4 bg-surface text-foreground p-4"><code class="hljs language-python text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border bg-surface p-4 rounded-lg overflow-x-auto"><span class="hljs-comment"># Lambda 함수 예시</span>
+<span class="hljs-keyword">import</span> json
+<span class="hljs-keyword">import</span> boto3
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">lambda_handler</span>(<span class="hljs-params">event, context</span>):
+    <span class="hljs-comment"># 이벤트 처리 로직</span>
+    dynamodb = boto3.resource(<span class="hljs-string">'dynamodb'</span>)
+    table = dynamodb.Table(<span class="hljs-string">'users'</span>)
+    
+    response = table.get_item(
+        Key={<span class="hljs-string">'user_id'</span>: event[<span class="hljs-string">'user_id'</span>]}
+    )
+    
+    <span class="hljs-keyword">return</span> {
+        <span class="hljs-string">'statusCode'</span>: <span class="hljs-number">200</span>,
+        <span class="hljs-string">'body'</span>: json.dumps(response[<span class="hljs-string">'Item'</span>])
+    }
+</code></pre>
+<p class="text-foreground-secondary leading-relaxed mb-4"><strong class="font-bold text-foreground">선택 기준:</strong></p>
+<ul class="list-disc list-inside text-foreground-secondary mb-4 space-y-1">
+<li class="text-foreground-secondary"><strong class="font-bold text-foreground">Lambda</strong>: 비정기적, 짧은 실행 시간</li>
+<li class="text-foreground-secondary"><strong class="font-bold text-foreground">EC2</strong>: 장시간 실행, 상태 유지 필요</li>
+</ul>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">2. RDS vs DynamoDB</h3>
+<pre class="rounded-lg overflow-x-auto mb-4 bg-surface text-foreground p-4"><code class="hljs language-sql text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border bg-surface p-4 rounded-lg overflow-x-auto"><span class="hljs-comment">-- RDS (관계형 데이터)</span>
+<span class="hljs-keyword">SELECT</span> u.name, <span class="hljs-built_in">COUNT</span>(o.id) <span class="hljs-keyword">as</span> order_count
+<span class="hljs-keyword">FROM</span> users u
+<span class="hljs-keyword">LEFT</span> <span class="hljs-keyword">JOIN</span> orders o <span class="hljs-keyword">ON</span> u.id <span class="hljs-operator">=</span> o.user_id
+<span class="hljs-keyword">GROUP</span> <span class="hljs-keyword">BY</span> u.id;
+</code></pre>
+<pre class="rounded-lg overflow-x-auto mb-4 bg-surface text-foreground p-4"><code class="hljs language-python text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border bg-surface p-4 rounded-lg overflow-x-auto"><span class="hljs-comment"># DynamoDB (NoSQL)</span>
+<span class="hljs-keyword">import</span> boto3
+
+dynamodb = boto3.resource(<span class="hljs-string">'dynamodb'</span>)
+table = dynamodb.Table(<span class="hljs-string">'user-orders'</span>)
+
+response = table.query(
+    KeyConditionExpression=Key(<span class="hljs-string">'user_id'</span>).eq(<span class="hljs-string">'123'</span>)
+)
+</code></pre>
+<p class="text-foreground-secondary leading-relaxed mb-4"><strong class="font-bold text-foreground">선택 기준:</strong></p>
+<ul class="list-disc list-inside text-foreground-secondary mb-4 space-y-1">
+<li class="text-foreground-secondary"><strong class="font-bold text-foreground">RDS</strong>: 복잡한 쿼리, 트랜잭션 필요</li>
+<li class="text-foreground-secondary"><strong class="font-bold text-foreground">DynamoDB</strong>: 높은 확장성, 단순한 쿼리</li>
+</ul>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">3. Application Load Balancer vs Network Load Balancer</h3>
+<pre class="rounded-lg overflow-x-auto mb-4 bg-surface text-foreground p-4"><code class="hljs language-yaml text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border bg-surface p-4 rounded-lg overflow-x-auto"><span class="hljs-comment"># ALB 설정</span>
+<span class="hljs-attr">Type:</span> <span class="hljs-string">Application</span>
+<span class="hljs-attr">Scheme:</span> <span class="hljs-string">internet-facing</span>
+<span class="hljs-attr">Listeners:</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-attr">Port:</span> <span class="hljs-number">80</span>
+    <span class="hljs-attr">Protocol:</span> <span class="hljs-string">HTTP</span>
+    <span class="hljs-attr">Default Actions:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">Type:</span> <span class="hljs-string">redirect</span>
+        <span class="hljs-attr">RedirectConfig:</span>
+          <span class="hljs-attr">Protocol:</span> <span class="hljs-string">HTTPS</span>
+          <span class="hljs-attr">Port:</span> <span class="hljs-number">443</span>
+          <span class="hljs-attr">StatusCode:</span> <span class="hljs-string">HTTP_301</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-attr">Port:</span> <span class="hljs-number">443</span>
+    <span class="hljs-attr">Protocol:</span> <span class="hljs-string">HTTPS</span>
+    <span class="hljs-attr">Certificates:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">CertificateArn:</span> <span class="hljs-string">arn:aws:acm:...</span>
+</code></pre>
+<p class="text-foreground-secondary leading-relaxed mb-4"><strong class="font-bold text-foreground">선택한 이유:</strong></p>
+<ul class="list-disc list-inside text-foreground-secondary mb-4 space-y-1">
+<li class="text-foreground-secondary">HTTP/HTTPS 트래픽 처리</li>
+<li class="text-foreground-secondary">경로 기반 라우팅 필요</li>
+<li class="text-foreground-secondary">SSL/TLS 종료 기능</li>
+</ul>
+<h2 class="text-xl font-bold text-foreground mt-6 mb-3">성능 최적화</h2>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">CloudWatch 모니터링</h3>
+<pre class="rounded-lg overflow-x-auto mb-4 bg-surface text-foreground p-4"><code class="hljs language-python text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border bg-surface p-4 rounded-lg overflow-x-auto"><span class="hljs-keyword">import</span> boto3
+
+cloudwatch = boto3.client(<span class="hljs-string">'cloudwatch'</span>)
+
+<span class="hljs-comment"># 커스텀 메트릭 전송</span>
+cloudwatch.put_metric_data(
+    Namespace=<span class="hljs-string">'MyApp/Performance'</span>,
+    MetricData=[
+        {
+            <span class="hljs-string">'MetricName'</span>: <span class="hljs-string">'ResponseTime'</span>,
+            <span class="hljs-string">'Value'</span>: response_time,
+            <span class="hljs-string">'Unit'</span>: <span class="hljs-string">'Milliseconds'</span>,
+            <span class="hljs-string">'Dimensions'</span>: [
+                {
+                    <span class="hljs-string">'Name'</span>: <span class="hljs-string">'Environment'</span>,
+                    <span class="hljs-string">'Value'</span>: <span class="hljs-string">'production'</span>
+                }
+            ]
+        }
+    ]
+)
+</code></pre>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">Auto Scaling 정책</h3>
+<pre class="rounded-lg overflow-x-auto mb-4 bg-surface text-foreground p-4"><code class="hljs language-yaml text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border bg-surface p-4 rounded-lg overflow-x-auto"><span class="hljs-attr">AutoScalingPolicy:</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-attr">PolicyName:</span> <span class="hljs-string">ScaleUpPolicy</span>
+    <span class="hljs-attr">ScalingAdjustment:</span> <span class="hljs-number">2</span>
+    <span class="hljs-attr">Cooldown:</span> <span class="hljs-number">300</span>
+    <span class="hljs-attr">MetricName:</span> <span class="hljs-string">CPUUtilization</span>
+    <span class="hljs-attr">ComparisonOperator:</span> <span class="hljs-string">GreaterThanThreshold</span>
+    <span class="hljs-attr">Threshold:</span> <span class="hljs-number">70</span>
+  
+  <span class="hljs-bullet">-</span> <span class="hljs-attr">PolicyName:</span> <span class="hljs-string">ScaleDownPolicy</span>
+    <span class="hljs-attr">ScalingAdjustment:</span> <span class="hljs-number">-1</span>
+    <span class="hljs-attr">Cooldown:</span> <span class="hljs-number">300</span>
+    <span class="hljs-attr">MetricName:</span> <span class="hljs-string">CPUUtilization</span>
+    <span class="hljs-attr">ComparisonOperator:</span> <span class="hljs-string">LessThanThreshold</span>
+    <span class="hljs-attr">Threshold:</span> <span class="hljs-number">30</span>
+</code></pre>
+<h2 class="text-xl font-bold text-foreground mt-6 mb-3">비용 최적화</h2>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">Reserved Instances vs Spot Instances</h3>
+<pre class="rounded-lg overflow-x-auto mb-4 bg-surface text-foreground p-4"><code class="hljs language-bash text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border bg-surface p-4 rounded-lg overflow-x-auto"><span class="hljs-comment"># 비용 분석 스크립트</span>
+aws ce get-cost-and-usage \
+    --time-period Start=2023-01-01,End=2023-12-31 \
+    --granularity MONTHLY \
+    --metrics BlendedCost \
+    --group-by Type=DIMENSION,Key=SERVICE
+</code></pre>
+<p class="text-foreground-secondary leading-relaxed mb-4"><strong class="font-bold text-foreground">전략:</strong></p>
+<ul class="list-disc list-inside text-foreground-secondary mb-4 space-y-1">
+<li class="text-foreground-secondary">기본 용량: Reserved Instances (1년 예약)</li>
+<li class="text-foreground-secondary">피크 트래픽: Spot Instances</li>
+<li class="text-foreground-secondary">버스트 트래픽: On-Demand Instances</li>
+</ul>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">S3 스토리지 클래스</h3>
+<pre class="rounded-lg overflow-x-auto mb-4 bg-surface text-foreground p-4"><code class="hljs language-yaml text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border bg-surface p-4 rounded-lg overflow-x-auto"><span class="hljs-attr">LifecycleConfiguration:</span>
+  <span class="hljs-attr">Rules:</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-attr">Status:</span> <span class="hljs-string">Enabled</span>
+      <span class="hljs-attr">Transitions:</span>
+        <span class="hljs-bullet">-</span> <span class="hljs-attr">Days:</span> <span class="hljs-number">30</span>
+          <span class="hljs-attr">StorageClass:</span> <span class="hljs-string">STANDARD_IA</span>
+        <span class="hljs-bullet">-</span> <span class="hljs-attr">Days:</span> <span class="hljs-number">90</span>
+          <span class="hljs-attr">StorageClass:</span> <span class="hljs-string">GLACIER</span>
+        <span class="hljs-bullet">-</span> <span class="hljs-attr">Days:</span> <span class="hljs-number">365</span>
+          <span class="hljs-attr">StorageClass:</span> <span class="hljs-string">DEEP_ARCHIVE</span>
+</code></pre>
+<h2 class="text-xl font-bold text-foreground mt-6 mb-3">보안 고려사항</h2>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">IAM 역할 기반 액세스</h3>
+<pre class="rounded-lg overflow-x-auto mb-4 bg-surface text-foreground p-4"><code class="hljs language-json text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border bg-surface p-4 rounded-lg overflow-x-auto"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">"Version"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"2012-10-17"</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">"Statement"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+    <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">"Effect"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"Allow"</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">"Action"</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+        <span class="hljs-string">"dynamodb:GetItem"</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-string">"dynamodb:PutItem"</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-string">"dynamodb:Query"</span>
+      <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">"Resource"</span><span class="hljs-punctuation">:</span> <span class="hljs-string">"arn:aws:dynamodb:region:account:table/MyTable"</span>
+    <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">]</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">VPC 보안 그룹</h3>
+<pre class="rounded-lg overflow-x-auto mb-4 bg-surface text-foreground p-4"><code class="hljs language-yaml text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border bg-surface p-4 rounded-lg overflow-x-auto"><span class="hljs-attr">SecurityGroups:</span>
+  <span class="hljs-attr">WebTier:</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-attr">Protocol:</span> <span class="hljs-string">TCP</span>
+      <span class="hljs-attr">Port:</span> <span class="hljs-number">80</span><span class="hljs-string">,443</span>
+      <span class="hljs-attr">Source:</span> <span class="hljs-number">0.0</span><span class="hljs-number">.0</span><span class="hljs-number">.0</span><span class="hljs-string">/0</span>
+  
+  <span class="hljs-attr">AppTier:</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-attr">Protocol:</span> <span class="hljs-string">TCP</span>
+      <span class="hljs-attr">Port:</span> <span class="hljs-number">8080</span>
+      <span class="hljs-attr">Source:</span> <span class="hljs-string">WebTier-SG</span>
+  
+  <span class="hljs-attr">DatabaseTier:</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-attr">Protocol:</span> <span class="hljs-string">TCP</span>
+      <span class="hljs-attr">Port:</span> <span class="hljs-number">5432</span>
+      <span class="hljs-attr">Source:</span> <span class="hljs-string">AppTier-SG</span>
+</code></pre>
+<h2 class="text-xl font-bold text-foreground mt-6 mb-3">배운 점들</h2>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">1. 점진적 마이그레이션</h3>
+<ul class="list-disc list-inside text-foreground-secondary mb-4 space-y-1">
+<li class="text-foreground-secondary">한 번에 모든 것을 바꾸지 말고 단계적으로 진행</li>
+<li class="text-foreground-secondary">각 단계별로 충분한 테스트와 모니터링</li>
+</ul>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">2. 비용 모니터링의 중요성</h3>
+<ul class="list-disc list-inside text-foreground-secondary mb-4 space-y-1">
+<li class="text-foreground-secondary">예상보다 높은 데이터 전송 비용</li>
+<li class="text-foreground-secondary">CloudWatch 로그 저장 비용 최적화 필요</li>
+</ul>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">3. 장애 대응 계획</h3>
+<pre class="rounded-lg overflow-x-auto mb-4 bg-surface text-foreground p-4"><code class="hljs language-bash text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border bg-surface p-4 rounded-lg overflow-x-auto"><span class="hljs-comment"># 장애 시나리오별 대응 스크립트</span>
+<span class="hljs-comment">#!/bin/bash</span>
+
+<span class="hljs-keyword">case</span> <span class="hljs-variable">$1</span> <span class="hljs-keyword">in</span>
+  <span class="hljs-string">"database"</span>)
+    <span class="hljs-comment"># RDS 페일오버</span>
+    aws rds failover-db-cluster --db-cluster-identifier myapp-cluster
+    ;;
+  <span class="hljs-string">"application"</span>)
+    <span class="hljs-comment"># Auto Scaling 강제 스케일아웃</span>
+    aws autoscaling set-desired-capacity --auto-scaling-group-name myapp-asg --desired-capacity 10
+    ;;
+<span class="hljs-keyword">esac</span>
+</code></pre>
+<h2 class="text-xl font-bold text-foreground mt-6 mb-3">결론</h2>
+<p class="text-foreground-secondary leading-relaxed mb-4">AWS 아키텍처 설계는 비즈니스 요구사항, 성능, 비용, 보안을 모두 고려해야 하는 복합적인 과정입니다. 중요한 것은 초기에 완벽한 설계보다는 요구사항 변화에 따라 유연하게 진화할 수 있는 구조를 만드는 것입니다.</p>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">권장사항</h3>
+<ol class="list-decimal list-inside text-foreground-secondary mb-4 space-y-1">
+<li class="text-foreground-secondary">Well-Architected Framework 활용</li>
+<li class="text-foreground-secondary">정기적인 비용 검토</li>
+<li class="text-foreground-secondary">자동화된 모니터링 및 알림</li>
+<li class="text-foreground-secondary">재해 복구 계획 수립</li>
+<li class="text-foreground-secondary">지속적인 성능 최적화</li>
+</ol>

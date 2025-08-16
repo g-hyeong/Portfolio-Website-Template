@@ -1,0 +1,465 @@
+@import "tailwindcss";
+
+:root {
+  /* Light theme - 오팔 색상 팔레트 */
+  --background: #ffffff;
+  --surface: #fafbfc;
+  --surface-secondary: #f3f4f6;
+  --foreground: #1a1a1a;
+  --foreground-secondary: #6b7684;
+  --foreground-muted: #8b95a1;
+  
+  /* 오팔 Primary - 은은한 보라빛 */
+  --opal-primary: #8B7FB8;
+  --opal-primary-hover: #7A6EA7;
+  --opal-primary-light: #A89FC1;
+  --opal-accent: #9F8FD4;
+  --opal-accent-light: #B8ADE3;
+  
+  /* Semantic colors */
+  --border: #e5e7eb;
+  --border-secondary: #d1d5db;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  
+  /* Shadow colors */
+  --shadow-light: rgba(0, 0, 0, 0.05);
+  --shadow-medium: rgba(0, 0, 0, 0.1);
+  --shadow-heavy: rgba(0, 0, 0, 0.15);
+
+  /* Glassmorphism colors - More vibrant */
+  --glass-background: rgba(255, 255, 255, 0.25);
+  --glass-background-secondary: rgba(255, 255, 255, 0.35);
+  --glass-background-tertiary: rgba(255, 255, 255, 0.45);
+  --glass-border: rgba(255, 255, 255, 0.6);
+  --glass-overlay: rgba(0, 0, 0, 0.2);
+  
+  /* 노트 모달 전용 glassmorphism - 라이트모드 */
+  --glass-modal-background: rgba(248, 250, 252, 0.85);
+  --glass-modal-border: rgba(255, 255, 255, 0.7);
+  
+  /* Glassmorphism effects - Enhanced */
+  --glass-blur-strong: blur(50px) saturate(2.2) brightness(1.3) contrast(1.1);
+  --glass-blur-medium: blur(40px) saturate(2.0) brightness(1.25) contrast(1.08);
+  --glass-blur-light: blur(30px) saturate(1.8) brightness(1.2) contrast(1.05);
+}
+
+[data-theme="dark"] {
+  /* Dark theme - 향상된 가시성을 위한 토스 그레이 기반 오팔 색상 팔레트 */
+  --background: #1a202c;
+  --surface: #2d3748;
+  --surface-secondary: #4a5568;
+  --foreground: #f7fafc;
+  --foreground-secondary: #e2e8f0;
+  --foreground-muted: #a0aec0;
+  
+  /* 오팔 Primary - 다크모드에서 더 밝고 선명하게 */
+  --opal-primary: #B794F6;
+  --opal-primary-hover: #D6BCFA;
+  --opal-primary-light: #E9D8FD;
+  --opal-accent: #C59EF6;
+  --opal-accent-light: #E9D8FD;
+  
+  /* Semantic colors - 더 선명하게 */
+  --border: #718096;
+  --border-secondary: #a0aec0;
+  --success: #48bb78;
+  --warning: #ed8936;
+  --error: #f56565;
+  
+  /* Shadow colors - 더 강한 그림자 */
+  --shadow-light: rgba(0, 0, 0, 0.3);
+  --shadow-medium: rgba(0, 0, 0, 0.4);
+  --shadow-heavy: rgba(0, 0, 0, 0.6);
+
+  /* Glassmorphism colors - Dark theme enhanced */
+  --glass-background: rgba(45, 55, 72, 0.35);
+  --glass-background-secondary: rgba(45, 55, 72, 0.45);
+  --glass-background-tertiary: rgba(45, 55, 72, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.25);
+  --glass-overlay: rgba(0, 0, 0, 0.5);
+  
+  /* 노트 모달 전용 glassmorphism - 다크모드 */
+  --glass-modal-background: rgba(45, 55, 72, 0.6);
+  --glass-modal-border: rgba(255, 255, 255, 0.25);
+  
+  /* Glassmorphism effects - Dark theme enhanced */
+  --glass-blur-strong: blur(50px) saturate(1.8) brightness(1.2) contrast(1.1);
+  --glass-blur-medium: blur(40px) saturate(1.6) brightness(1.15) contrast(1.08);
+  --glass-blur-light: blur(30px) saturate(1.4) brightness(1.1) contrast(1.05);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-secondary: var(--surface-secondary);
+  --color-foreground: var(--foreground);
+  --color-foreground-secondary: var(--foreground-secondary);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-opal-primary: var(--opal-primary);
+  --color-opal-primary-hover: var(--opal-primary-hover);
+  --color-opal-primary-light: var(--opal-primary-light);
+  --color-opal-accent: var(--opal-accent);
+  --color-opal-accent-light: var(--opal-accent-light);
+  --color-border: var(--border);
+  --color-border-secondary: var(--border-secondary);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --color-glass-background: var(--glass-background);
+  --color-glass-background-secondary: var(--glass-background-secondary);
+  --color-glass-background-tertiary: var(--glass-background-tertiary);
+  --color-glass-border: var(--glass-border);
+  --color-glass-overlay: var(--glass-overlay);
+  --color-glass-modal-background: var(--glass-modal-background);
+  --color-glass-modal-border: var(--glass-modal-border);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* 부드러운 스크롤 */
+html {
+  scroll-behavior: smooth;
+}
+
+/* 커스텀 스크롤바 */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, var(--opal-primary), var(--opal-accent));
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, var(--opal-primary-hover), var(--opal-primary-light));
+}
+
+/* 텍스트 선택 스타일 */
+::selection {
+  background-color: rgba(139, 127, 184, 0.3);
+  color: var(--opal-primary);
+}
+
+[data-theme="dark"] ::selection {
+  background-color: rgba(159, 143, 212, 0.3);
+  color: var(--opal-accent-light);
+}
+
+/* 포커스 아웃라인 커스터마이징 */
+*:focus {
+  outline: 2px solid var(--opal-primary);
+  outline-offset: 2px;
+}
+
+/* 텍스트 잘림 유틸리티 */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-4 {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 스크롤바 숨기기 */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* 배경 그라디언트 애니메이션 */
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animated-gradient {
+  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  background-size: 400% 400%;
+  animation: gradientAnimation 15s ease infinite;
+}
+
+/* 화려한 glassmorphism 헬퍼 클래스들 */
+.glass-card {
+  background: var(--glass-background-tertiary);
+  backdrop-filter: var(--glass-blur-light);
+  border: none;
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.3),
+    0 15px 35px rgba(0, 0, 0, 0.1),
+    0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] .glass-card {
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.15),
+    0 15px 35px rgba(0, 0, 0, 0.3),
+    0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.glass-card-vibrant {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.4) 0%, 
+    rgba(255, 255, 255, 0.2) 50%, 
+    rgba(255, 255, 255, 0.3) 100%);
+  backdrop-filter: var(--glass-blur-medium);
+  border: none;
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.4),
+    0 20px 40px rgba(0, 0, 0, 0.15),
+    0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] .glass-card-vibrant {
+  background: linear-gradient(135deg, 
+    rgba(45, 55, 72, 0.6) 0%, 
+    rgba(45, 55, 72, 0.4) 50%, 
+    rgba(45, 55, 72, 0.5) 100%);
+  border: none;
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.2),
+    0 20px 40px rgba(0, 0, 0, 0.4),
+    0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* 노트 모달 전용 glassmorphism - 더 아름다운 라이트모드 */
+.glass-modal {
+  background: linear-gradient(135deg, 
+    rgba(248, 250, 252, 0.92) 0%, 
+    rgba(255, 255, 255, 0.88) 50%, 
+    rgba(248, 250, 252, 0.95) 100%);
+  backdrop-filter: var(--glass-blur-strong);
+  border: none;
+  box-shadow: 
+    inset 0 2px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.7),
+    0 25px 50px rgba(0, 0, 0, 0.12),
+    0 15px 35px rgba(139, 127, 184, 0.08);
+}
+
+[data-theme="dark"] .glass-modal {
+  background: linear-gradient(135deg, 
+    rgba(45, 55, 72, 0.7) 0%, 
+    rgba(45, 55, 72, 0.6) 50%, 
+    rgba(45, 55, 72, 0.75) 100%);
+  box-shadow: 
+    inset 0 2px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.2),
+    0 25px 50px rgba(0, 0, 0, 0.4),
+    0 15px 35px rgba(139, 127, 184, 0.2);
+}
+
+/* 노트 모달 내부 요소용 glassmorphism */
+.glass-modal-content {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.7) 0%, 
+    rgba(248, 250, 252, 0.8) 100%);
+  backdrop-filter: var(--glass-blur-light);
+  border: none;
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.4),
+    0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="dark"] .glass-modal-content {
+  background: linear-gradient(135deg, 
+    rgba(45, 55, 72, 0.5) 0%, 
+    rgba(45, 55, 72, 0.6) 100%);
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.15),
+    0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* 탭 활성 인디케이터 - 세련된 glassmorphism 스타일 */
+.tab-active-indicator {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px) saturate(120%);
+  box-shadow: 
+    0 2px 8px rgba(139, 127, 184, 0.15),
+    0 1px 3px rgba(139, 127, 184, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(139, 127, 184, 0.2) !important;
+  outline: none !important;
+}
+
+[data-theme="dark"] .tab-active-indicator {
+  background: rgba(45, 55, 72, 0.9);
+  box-shadow: 
+    0 2px 8px rgba(139, 127, 184, 0.25),
+    0 1px 3px rgba(139, 127, 184, 0.15),
+    inset 0 1px 0 rgba(139, 127, 184, 0.3);
+  border: 1px solid rgba(139, 127, 184, 0.3) !important;
+}
+
+/* 탭 관련 모든 요소 강제 리셋 */
+.tab-container *:not(.tab-active-indicator) {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.tab-container {
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+  border-radius: 9999px !important;
+}
+
+[data-theme="dark"] .tab-container {
+  background: rgba(45, 55, 72, 0.95) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* 부드러운 테마 전환 효과 */
+* {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* Markdown 컨텐츠는 별도 컴포넌트에서 스타일링 관리 */
+
+/* 모바일 최적화 유틸리티 클래스들 */
+
+/* 터치 타겟 최적화 - 최소 44x44px 확보 */
+.touch-target {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* 터치 기기에서만 호버 효과 제거 */
+@media (hover: none) and (pointer: coarse) {
+  .no-touch-hover {
+    transform: none !important;
+    scale: none !important;
+  }
+  
+  .no-touch-hover:hover {
+    transform: none !important;
+    scale: 1 !important;
+    box-shadow: none !important;
+  }
+}
+
+/* 모바일에서 애니메이션 간소화 */
+@media (max-width: 768px) {
+  .mobile-simple-animation {
+    animation-duration: 0.2s !important;
+    transition-duration: 0.2s !important;
+  }
+  
+  .mobile-no-animation {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  /* 배경 애니메이션 모바일에서 비활성화 */
+  .mobile-hide-bg-animation > * {
+    animation: none !important;
+  }
+}
+
+/* 모션 감소 설정 고려 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* 모바일 터치 친화적 패딩 */
+.mobile-touch-padding {
+  @media (max-width: 768px) {
+    padding: 1rem !important;
+  }
+}
+
+/* 모바일 텍스트 크기 조정 */
+.mobile-text-scale {
+  @media (max-width: 768px) {
+    font-size: 0.9em;
+  }
+}
+
+/* 모바일에서 작은 요소들 크기 증가 */
+.mobile-enlarge {
+  @media (max-width: 768px) {
+    transform: scale(1.2);
+    margin: 0.25rem;
+  }
+}
+
+/* 모바일에서 플로팅 요소들 숨기기 */
+.mobile-floating-adjust {
+  @media (max-width: 768px) {
+    display: none !important;
+  }
+}
+
+/* 모바일 pull-to-refresh 방지 */
+@media (max-width: 768px) {
+  /* 모달 스크롤 최적화 */
+  .modal-scroll-container {
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
+    touch-action: manipulation;
+    position: relative;
+    transform: translateZ(0);
+    will-change: scroll-position;
+    isolation: isolate;
+  }
+  
+  /* 모달 배경 스크롤 방지 */
+  .modal-backdrop {
+    touch-action: none;
+    overscroll-behavior: none;
+    position: fixed;
+    isolation: isolate;
+  }
+}

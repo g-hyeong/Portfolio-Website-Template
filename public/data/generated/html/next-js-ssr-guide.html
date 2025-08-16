@@ -1,0 +1,122 @@
+<h1 class="text-2xl font-bold text-foreground mt-8 mb-4 first:mt-0">Next.js SSR 완벽 가이드</h1>
+<p class="text-foreground-secondary leading-relaxed mb-4">Next.js의 Server-Side Rendering(SSR)에 대한 상세한 가이드와 실무 적용 사례를 다룹니다.</p>
+<h2 class="text-xl font-bold text-foreground mt-6 mb-3">SSR vs CSR vs SSG</h2>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">Server-Side Rendering (SSR)</h3>
+<ul class="list-disc list-inside text-foreground-secondary mb-4 space-y-1">
+<li class="text-foreground-secondary">서버에서 HTML을 생성하여 클라이언트에 전송</li>
+<li class="text-foreground-secondary">SEO에 유리하고 초기 로딩이 빠름</li>
+<li class="text-foreground-secondary">서버 부하가 있을 수 있음</li>
+</ul>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">Client-Side Rendering (CSR)</h3>
+<ul class="list-disc list-inside text-foreground-secondary mb-4 space-y-1">
+<li class="text-foreground-secondary">클라이언트에서 JavaScript로 DOM을 생성</li>
+<li class="text-foreground-secondary">인터랙티브한 사용자 경험</li>
+<li class="text-foreground-secondary">초기 로딩이 느릴 수 있음</li>
+</ul>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">Static Site Generation (SSG)</h3>
+<ul class="list-disc list-inside text-foreground-secondary mb-4 space-y-1">
+<li class="text-foreground-secondary">빌드 시점에 HTML을 미리 생성</li>
+<li class="text-foreground-secondary">가장 빠른 로딩 속도</li>
+<li class="text-foreground-secondary">동적 데이터 처리에 제한</li>
+</ul>
+<h2 class="text-xl font-bold text-foreground mt-6 mb-3">getServerSideProps 활용</h2>
+<pre class="rounded-lg overflow-x-auto mb-4 bg-surface text-foreground p-4"><code class="hljs language-jsx text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border bg-surface p-4 rounded-lg overflow-x-auto"><span class="hljs-keyword">export</span> <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">getServerSideProps</span>(<span class="hljs-params">context</span>) {
+  <span class="hljs-keyword">const</span> { req, res, query } = context;
+  
+  <span class="hljs-comment">// 서버에서 데이터 패칭</span>
+  <span class="hljs-keyword">const</span> data = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetchData</span>(query.<span class="hljs-property">id</span>);
+  
+  <span class="hljs-comment">// 404 처리</span>
+  <span class="hljs-keyword">if</span> (!data) {
+    <span class="hljs-keyword">return</span> {
+      <span class="hljs-attr">notFound</span>: <span class="hljs-literal">true</span>,
+    };
+  }
+  
+  <span class="hljs-comment">// 리다이렉트</span>
+  <span class="hljs-keyword">if</span> (data.<span class="hljs-property">redirectTo</span>) {
+    <span class="hljs-keyword">return</span> {
+      <span class="hljs-attr">redirect</span>: {
+        <span class="hljs-attr">destination</span>: data.<span class="hljs-property">redirectTo</span>,
+        <span class="hljs-attr">permanent</span>: <span class="hljs-literal">false</span>,
+      },
+    };
+  }
+  
+  <span class="hljs-keyword">return</span> {
+    <span class="hljs-attr">props</span>: {
+      data,
+    },
+  };
+}
+</code></pre>
+<h2 class="text-xl font-bold text-foreground mt-6 mb-3">데이터 패칭 최적화</h2>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">SWR 사용</h3>
+<pre class="rounded-lg overflow-x-auto mb-4 bg-surface text-foreground p-4"><code class="hljs language-jsx text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border bg-surface p-4 rounded-lg overflow-x-auto"><span class="hljs-keyword">import</span> useSWR <span class="hljs-keyword">from</span> <span class="hljs-string">'swr'</span>;
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">Profile</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">const</span> { data, error } = <span class="hljs-title function_">useSWR</span>(<span class="hljs-string">'/api/user'</span>, fetcher);
+  
+  <span class="hljs-keyword">if</span> (error) <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&#x3C;<span class="hljs-name">div</span>></span>Failed to load<span class="hljs-tag">&#x3C;/<span class="hljs-name">div</span>></span></span>;
+  <span class="hljs-keyword">if</span> (!data) <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&#x3C;<span class="hljs-name">div</span>></span>Loading...<span class="hljs-tag">&#x3C;/<span class="hljs-name">div</span>></span></span>;
+  
+  <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&#x3C;<span class="hljs-name">div</span>></span>Hello {data.name}!<span class="hljs-tag">&#x3C;/<span class="hljs-name">div</span>></span></span>;
+}
+</code></pre>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">React Query 사용</h3>
+<pre class="rounded-lg overflow-x-auto mb-4 bg-surface text-foreground p-4"><code class="hljs language-jsx text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border bg-surface p-4 rounded-lg overflow-x-auto"><span class="hljs-keyword">import</span> { useQuery } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-query'</span>;
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">Posts</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">const</span> { data, isLoading, error } = <span class="hljs-title function_">useQuery</span>(<span class="hljs-string">'posts'</span>, fetchPosts);
+  
+  <span class="hljs-keyword">if</span> (isLoading) <span class="hljs-keyword">return</span> <span class="hljs-string">'Loading...'</span>;
+  <span class="hljs-keyword">if</span> (error) <span class="hljs-keyword">return</span> <span class="hljs-string">'An error occurred'</span>;
+  
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&#x3C;<span class="hljs-name">ul</span>></span>
+      {data.map(post => (
+        <span class="hljs-tag">&#x3C;<span class="hljs-name">li</span> <span class="hljs-attr">key</span>=<span class="hljs-string">{post.id}</span>></span>{post.title}<span class="hljs-tag">&#x3C;/<span class="hljs-name">li</span>></span>
+      ))}
+    <span class="hljs-tag">&#x3C;/<span class="hljs-name">ul</span>></span></span>
+  );
+}
+</code></pre>
+<h2 class="text-xl font-bold text-foreground mt-6 mb-3">성능 최적화</h2>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">동적 라우팅</h3>
+<pre class="rounded-lg overflow-x-auto mb-4 bg-surface text-foreground p-4"><code class="hljs language-jsx text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border bg-surface p-4 rounded-lg overflow-x-auto"><span class="hljs-comment">// pages/posts/[id].js</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">getServerSideProps</span>(<span class="hljs-params">{ params }</span>) {
+  <span class="hljs-keyword">const</span> post = <span class="hljs-keyword">await</span> <span class="hljs-title function_">getPost</span>(params.<span class="hljs-property">id</span>);
+  
+  <span class="hljs-keyword">return</span> {
+    <span class="hljs-attr">props</span>: {
+      post,
+    },
+  };
+}
+</code></pre>
+<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">캐싱 전략</h3>
+<pre class="rounded-lg overflow-x-auto mb-4 bg-surface text-foreground p-4"><code class="hljs language-jsx text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border bg-surface p-4 rounded-lg overflow-x-auto"><span class="hljs-keyword">export</span> <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">getServerSideProps</span>(<span class="hljs-params">{ res }</span>) {
+  <span class="hljs-comment">// 캐시 헤더 설정</span>
+  res.<span class="hljs-title function_">setHeader</span>(
+    <span class="hljs-string">'Cache-Control'</span>,
+    <span class="hljs-string">'public, s-maxage=10, stale-while-revalidate=59'</span>
+  );
+  
+  <span class="hljs-keyword">const</span> data = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetchData</span>();
+  
+  <span class="hljs-keyword">return</span> {
+    <span class="hljs-attr">props</span>: {
+      data,
+    },
+  };
+}
+</code></pre>
+<h2 class="text-xl font-bold text-foreground mt-6 mb-3">실무 팁</h2>
+<ol class="list-decimal list-inside text-foreground-secondary mb-4 space-y-1">
+<li class="text-foreground-secondary"><strong class="font-bold text-foreground">API 라우트 활용</strong>: <code class="text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border">/pages/api</code> 디렉토리를 활용하여 백엔드 API 구축</li>
+<li class="text-foreground-secondary"><strong class="font-bold text-foreground">미들웨어 사용</strong>: 인증, 로깅 등을 위한 미들웨어 구성</li>
+<li class="text-foreground-secondary"><strong class="font-bold text-foreground">환경변수 관리</strong>: <code class="text-foreground px-2 py-1 rounded text-sm bg-surface-secondary border border-border">.env.local</code> 파일을 통한 환경변수 관리</li>
+<li class="text-foreground-secondary"><strong class="font-bold text-foreground">타입스크립트 적용</strong>: 타입 안정성을 위한 TypeScript 사용</li>
+</ol>
+<h2 class="text-xl font-bold text-foreground mt-6 mb-3">결론</h2>
+<p class="text-foreground-secondary leading-relaxed mb-4">Next.js의 SSR은 SEO와 성능을 동시에 만족시킬 수 있는 강력한 기능입니다. 프로젝트의 요구사항에 맞게 적절한 렌더링 전략을 선택하는 것이 중요합니다.</p>
